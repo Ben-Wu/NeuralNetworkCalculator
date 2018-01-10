@@ -9,8 +9,8 @@ from keras.utils.np_utils import to_categorical
 def create_model(output_classes):
     model = Sequential()
 
-    model.add(Dense(64, input_dim=2))
-    model.add(Dense(64))
+    model.add(Dense(2, input_dim=2))
+    model.add(Dense(10))
     model.add(Dense(output_classes))
 
     model.compile(optimizer='sgd',
@@ -24,11 +24,11 @@ def generate_seed():
     return random.randint(0, 123123321)
 
 
-def generate_data(size, min, max, num_classes, seed=None):
+def generate_data(size, low, high, num_classes, seed=None):
     """Generate random arrays to use as data"""
     np.random.seed(seed or generate_seed())
 
-    x = np.random.randint(low=min, high=max, size=(size, 2))
+    x = np.random.randint(low=low, high=high, size=(size, 2))
     y = to_categorical(np.array([e[0] + e[1] for e in x]), num_classes)
 
     return x, y
@@ -50,14 +50,14 @@ def data_generator(size, low, high, num_classes, batch_size=10, seed=None):
 if __name__ == '__main__':
     data_size = 7000
     min_input = 0
-    max_input = 10
+    max_input = 11
     max_output = max_input * 2
 
     model = create_model(max_output)
     train_datagen = data_generator(data_size, min_input, max_input,
                                    max_output, seed=123)
 
-    model.fit_generator(train_datagen, data_size, epochs=15, verbose=True)
+    model.fit_generator(train_datagen, data_size, epochs=5, verbose=True)
 
     test_x, test_y = generate_data(100, min_input, max_input, max_output,
                                    seed=432)
